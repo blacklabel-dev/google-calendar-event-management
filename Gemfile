@@ -74,10 +74,8 @@ group :test do
   gem 'webdrivers'
 end
 
-gem 'devise'
+gem 'bootstrap', '~> 5.1.3'
+gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
-
-gem 'bootstrap', '~> 5.1.3'
-gem 'google-api-client', require: 'google/apis/calendar_v3'

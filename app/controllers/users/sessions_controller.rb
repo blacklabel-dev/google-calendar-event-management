@@ -1,35 +1,42 @@
 # frozen_string_literal: true
 
-class Users::SessionsController < Devise::SessionsController
-  # before_action :configure_sign_in_params, only: [:create]
+class Users::SessionsController < ActionController::Base
+  before_action :redirect_if_authenticated!, only: [:new]
 
-  # GET /resource/sign_in
-  # def new
-  #   super
-  # end
+  def new; end
 
-  # POST /resource/sign_in
-  # def create
-  #   super
-  # end
-
-  # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
-
-  # protected
-
-  # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_in_params
-  #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
-  # end
-
-  def after_sign_out_path_for(_resource_or_scope)
-    new_user_session_path
+  def create
+    user = User.from_omniauth(auth)
+    if user.present?
+      user.refresh_tokens(auth)
+      log_in(user)
+      flash[:success] = t 'omniauth_callbacks.success', kind: 'Google'
+      redirect_to events_path
+    else
+      flash[:alert] =
+        t 'omniauth_callbacks.failure', kind: 'Google', reason: "#{auth.info.email} is not authorized."
+      redirect_to root_path
+    end
   end
 
-  def after_sign_in_path_for(resource_or_scope)
-    stored_location_for(resource_or_scope) || events_path
+  def destroy
+    session[:user_id] = nil
+    flash[:success] = t('omniauth.session.successfully_logged_out')
+    redirect_to root_path
+  end
+
+  private
+
+  def auth
+    @auth ||= request.env['omniauth.auth']
+  end
+
+  def log_in(user)
+    session[:user_id] = user.id
+  end
+
+  def redirect_if_authenticated!
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+    redirect_to events_path if @current_user
   end
 end

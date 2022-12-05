@@ -1,22 +1,19 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         # for Google OmniAuth
-         :omniauthable, omniauth_providers: [:google_oauth2]
-
   def self.from_omniauth(auth)
+    # Creates a new user only if it doesn't exist
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email
-      user.password = Devise.friendly_token[0, 20]
-      user.full_name = auth.info.name # assuming the user model has a name
-      user.avatar_url = auth.info.image # assuming the user model has an image
-
-      user.access_token = auth.credentials.token
-      user.expires_at = auth.credentials.expires_at
-      user.refresh_token = auth.credentials.refresh_token
     end
+  end
+
+  def refresh_tokens(auth)
+    self.full_name = auth.info.name # assuming the user model has a name
+    self.avatar_url = auth.info.image # assuming the user model has an image
+
+    self.access_token = auth.credentials.token
+    self.expires_at = auth.credentials.expires_at
+    self.refresh_token = auth.credentials.refresh_token
+    save
   end
 
   def token_expired?

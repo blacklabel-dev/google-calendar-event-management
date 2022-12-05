@@ -23,14 +23,10 @@ This is an event management system, which provides the ability to easily schedul
 |description _`text`_           |access_token _`string`_                      |
 |end_at _`datetime(6,0) *`_     |avatar_url _`string`_                        |
 |gc_event_id _`string`_         |email _`string`_                             |
-|gc_link _`string`_             |encrypted_password _`string`_                |
-|location _`string`_            |expires_at _`string`_                        |
-|start_at _`datetime(6,0) *`_   |full_name _`string`_                         |
-|                               |provider _`string`_                          |
+|gc_link _`string`_             |expires_at _`string`_                        |
+|location _`string`_            |full_name _`string`_                         |
+|start_at _`datetime(6,0) *`_   |provider _`string`_                          |
 |                               |refresh_token _`string`_                     |
-|                               |remember_created_at _`datetime(6,0) *`_      |
-|                               |reset_password_sent_at _`datetime(6,0) *`_   |
-|                               |reset_password_token _`string`_              |
 |                               |uid _`string`_                               |
 
 ## App Flow
