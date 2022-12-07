@@ -2,27 +2,27 @@ class EventsController < ApplicationController
   before_action :load_event, only: %i[destroy edit update]
 
   def index
-    @events = Event.order(updated_at: :desc)
+    @events = current_user.events.order(updated_at: :desc)
 
     if params[:start_at].present? & params[:end_at].present?
       start_at = Time.zone.parse(params[:start_at]).beginning_of_day
       end_at = Time.zone.parse(params[:end_at]).end_of_day
 
-      @events = Event.searched_by(start_at, end_at).order(updated_at: :desc)
+      @events = current_user.events.searched_by(start_at, end_at).order(updated_at: :desc)
     else
-      @events = Event.order(updated_at: :desc)
+      @events = current_user.events.order(updated_at: :desc)
     end
   end
 
   def new
-    @event = Event.new
+    @event = current_user.events.new
   end
 
   def create
-    event = Event.new(event_params)
-    if event.save
+    @event = current_user.events.new(event_params)
+    if @event.save
 
-      GoogleCalender::EventScheduler.new(current_user, event).register_event
+      GoogleCalender::EventScheduler.new(current_user, @event).register_event
 
       flash[:success] = t(:successfully_created, scope: :event)
       redirect_to events_url
@@ -55,10 +55,10 @@ class EventsController < ApplicationController
   private
 
   def load_event
-    @event = Event.find_by(id: params[:id])
+    @event = current_user.events.find_by(id: params[:id])
   end
 
   def event_params
-    params.require(:event).permit(:title, :description, :location, :start_at, :end_at)
+    params.require(:event).permit(:title, :description, :location, :start_at, :end_at, :user_id)
   end
 end

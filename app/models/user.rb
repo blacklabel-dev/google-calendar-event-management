@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :events, dependent: :destroy
+
   def self.from_omniauth(auth)
     # Creates a new user only if it doesn't exist
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
