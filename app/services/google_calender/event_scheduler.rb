@@ -94,7 +94,7 @@ module GoogleCalender
 
       begin
         client.authorization.refresh!
-        user.update_attributes(
+        user.update!(
           access_token: client.authorization.access_token,
           refresh_token: client.authorization.refresh_token,
           expires_at: client.authorization.expires_at.to_i
